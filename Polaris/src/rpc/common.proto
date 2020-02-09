@@ -1,0 +1,51 @@
+
+syntax = "proto3";
+
+package rpc;
+
+message TransactionMessage {
+    string sender_id = 1;
+    bytes txnContent = 2;
+    bytes txnHeader = 3;
+}
+
+message TransactionHeader {
+    string sender_id = 1;
+    bytes hashContent = 2;
+}
+
+message Empty {
+}
+
+message TxnMessageBlock {
+    repeated TransactionMessage txnMessageList = 1; 
+}
+
+message TxnHeaderBlock {
+    repeated TransactionHeader txnHeaderList = 1;
+}
+
+message TxnBodyMessage {
+    string sender_id = 1;
+    int32 superLeaf_id = 2;
+    int32 raft_id = 3;
+    TxnMessageBlock txnMessageBlock = 4;
+}
+
+// this message is sent from SL leader to BG leader
+message SLRequestMessage {
+    string sender_id  = 1;
+    int64 nonce = 2;
+    fixed32 cycle_suggestion = 3;
+    uint32 which_group = 4;
+    string proof = 5;
+    bytes hash = 6;
+    int64 foreignView = 7;
+    int64 foreignSequence = 8;
+    TxnHeaderBlock txnHeaderBlock = 9;
+}
+
+message LeaderIdReply {
+    string Leader = 1;
+}
+

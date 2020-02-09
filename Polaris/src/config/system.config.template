@@ -1,0 +1,18 @@
+# total number of faults the cycstem can tolerate 
+failures=1
+# true: enable debug
+debug=true
+# max batch size for the raft layer
+max.batch=500
+# max batch size for the bft layer
+max.bft.batch=4
+# request time out
+request.timeout=1
+# cycle timeout for the raft layer
+cycle.timeout=10
+# cycle timeout for the pbft layer
+bft.cycle.timeout=40
+# max number of connection events
+max.connection.event.queue.size=500
+# if use signature
+signature=true

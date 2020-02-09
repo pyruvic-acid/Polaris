@@ -1,0 +1,11 @@
+*~
+.idea
+cmake-build-debug/
+.vscode/
+README.html
+venv/
+build/*
+*.swp
+tags
+compile_commands.json
+*__pycache__

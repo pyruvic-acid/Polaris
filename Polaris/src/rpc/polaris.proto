@@ -1,0 +1,85 @@
+// Copyright 2015 gRPC authors.
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
+syntax = "proto3";
+
+package rpc;
+import "common.proto";
+// import "sbft.proto";
+
+service PolarisAll {
+    // dissemination rpc: third round
+    rpc StateRequest(StateRequestMessage) returns (StateResponseMessage) {}
+    rpc StateRequestToMonitor(StateRequestMessage) returns (LeaderIdReply) {}
+    rpc StateResponse(StateResponseMessage) returns(Empty) {}
+    rpc StateResponseToMonitor(StateResponseMessage) returns (LeaderIdReply) {}
+    
+    // client send txn and get cycle result 
+    rpc AcceptTransaction (TransactionMessage) returns (Empty) {}
+    rpc GetCycle (RequestCycleMessage) returns (CycleInfo) {}
+
+    rpc TxnMessageToMonitor(TransactionMessage) returns (LeaderIdReply) {}
+    rpc TxnBodyToMonitor(TxnBodyMessage) returns (LeaderIdReply) {} 
+    rpc AcceptTxnBody(TxnBodyMessage) returns (Empty) {}
+}
+
+message StartCycleRequestMessage {
+    string sender_id = 1;
+    StateRequestMessage stateRequest = 2;
+}
+
+message RequestCycleMessage {
+    string sender_id = 1;
+    int32 cycle_id = 2;
+}
+
+message CycleInfo {
+    int32 cycle_id = 1;
+    repeated StateResponseMessage txnList = 2;
+}
+
+message StateRequestMessage {
+    int32 cycle_id = 1;
+    int32 bg_id = 2;
+    int64 sequence = 3;
+    int64 view = 4;
+    string sender_id = 5;
+    string sender_addr = 6;
+    string proof = 7;
+    bytes hash = 8;
+}
+
+message BftResult {
+    int64 sequence = 1;
+    int64 view = 2;
+    int64 nonce = 3;
+    fixed32 last_cycle = 4;
+    fixed32 current_cycle = 5;
+    string commit_proof = 6;
+
+    bool replaceMsgListWithHash = 7;
+    bytes hash = 8;
+    repeated SLRequestMessage messageList = 9;
+
+    bool bodyAttached = 10;
+    repeated TxnMessageBlock full_txn_list = 11;
+}
+
+message StateResponseMessage {
+    int32 cycle_id = 1;
+    int32 bg_id = 2;
+    string sender_id = 3;
+    BftResult result = 4;
+}
+

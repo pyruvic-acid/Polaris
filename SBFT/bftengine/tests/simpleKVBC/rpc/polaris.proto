@@ -1,0 +1,74 @@
+// Copyright 2015 gRPC authors.
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License. protoc -I rpc/ rpc/polaris.proto --go_out=plugins=grpc:rpc
+
+
+syntax = "proto3";
+
+package rpc;
+
+service Polaris {
+    rpc OrderRequest(SLRequestMessage) returns (LeaderIdReply) {}
+    rpc GetOrder(LeaderRequest) returns (stream LeaderReply) {}
+    rpc Verify(VerifyRequest) returns (VerifyStatus) {}
+}
+
+message TransactionHeader {
+    string sender_id = 1;
+    bytes hashContent = 2;
+}
+
+message TxnHeaderBlock {
+    repeated TransactionHeader txnHeaderList = 1;
+}
+
+message SLRequestMessage {
+    string sender_id  = 1;
+    int64 nonce = 2;
+    fixed32 cycle_suggestion = 3;
+    uint32 which_group = 4;
+    string proof = 5;
+    bytes hash = 6;
+    int64 foreignView = 7;
+    int64 foreignSequence = 8;
+    TxnHeaderBlock txnHeaderBlock = 9;
+}
+
+message LeaderIdReply {
+    string Leader = 1;
+}
+
+message LeaderRequest {
+    bytes signature = 1;
+}
+
+message LeaderReply {
+    int64 sequence = 1;
+    int64 view = 2;
+    int64 nonce = 3;
+    fixed32 last_cycle = 4;
+    fixed32 current_cycle = 5;
+    string commit_proof = 6; //#proof
+    repeated SLRequestMessage messageList = 7;
+}
+
+message VerifyStatus {
+    bool status = 1; //0 failed 1 success
+}
+
+message VerifyRequest{
+    int64 sequence = 1;
+    int64 view = 2;
+    string commit_proof = 3; 
+    string request_digest = 4;
+}
